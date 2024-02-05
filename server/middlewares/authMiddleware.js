@@ -1,6 +1,6 @@
-const jwt = require("jsonwebtoken");
-const { ApiError } = require("../utils/apiError");
-const isLoggedIn = async (req, res, next) => {
+import jwt from "jsonwebtoken";
+import { ApiError } from "../utils/apiError.js";
+export const isLoggedIn = async (req, res, next) => {
     const { token } = req.cookies;
     console.log("middleware token", token)
     if (!token) {
@@ -18,7 +18,7 @@ const isLoggedIn = async (req, res, next) => {
 }
 
 //middleware for protecting routes
-function authenticateToken(req, res, next) {
+export function authenticateToken(req, res, next) {
     const { token } = req.cookies;
     if (token) {
         jwt.verify(token, seceretKey, (err, user) => {
@@ -33,5 +33,3 @@ function authenticateToken(req, res, next) {
         res.sendStatus(401) //unauthorized
     }
 }
-
-module.exports = { isLoggedIn, authenticateToken }

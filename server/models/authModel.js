@@ -1,5 +1,5 @@
-const { Schema, default: mongoose } = require("mongoose");
-const jwt = require("jsonwebtoken")
+import { Schema, mongoose } from "mongoose";
+import jwt from "jsonwebtoken";
 
 const authSchema = new Schema({
     name: {
@@ -50,4 +50,4 @@ authSchema.methods = {
 }
 
 const authModel = mongoose.model("Users", authSchema);
-module.exports = { authModel };
+export default authModel;

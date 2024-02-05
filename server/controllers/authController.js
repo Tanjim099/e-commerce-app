@@ -1,18 +1,58 @@
-const { hashPassword, comparePassword } = require("../helper/authHelper");
-const { authModel } = require("../models/authModel");
-const { ApiResponse } = require("../utils/ApiResponse");
-const { ApiError } = require("../utils/apiError");
-
-
+import { hashPassword, comparePassword } from "../helper/authHelper.js"
+import authModel from "../models/authModel.js";
+import ApiResponse from "../utils/ApiResponse.js";
+import ApiError from "../utils/apiError.js";
+import otpGenerator from 'otp-generator';
+import OTP from "../models/optModel.js";
 const cookieOptions = {
     maxAge: 7 * 24 * 60 * 60 * 1000, //7 days
     httpOnly: true
 }
-const register = async (req, res, next) => {
+
+export const sendOTP = async (req, res, next) => {
     try {
-        const { name, email, password } = req.body;
+        const { email } = req.body;
+        console.log("email", email);
+        if (!email) {
+            return next(new ApiError(403, "Email is required"));
+        }
+        const userExist = await authModel.findOne({ email });
+        if (userExist) {
+            return next(new ApiError(400, "Email already exist"))
+        }
+
+        var opt = otpGenerator.generate(6, {
+            uperCaseAlphabets: false,
+            lowerCaseAlphabets: false,
+            specialChars: false,
+        });
+
+        const result = await OTP.findOne({ opt: opt });
+        while (result) {
+            opt = optGenerator.generate(6, {
+                uperCaseAlphabets: false,
+            });
+        }
+
+        const optPayload = { email, opt };
+        const optBody = await OTP.create(optPayload);
+
+        return res.status(201).json(
+            new ApiResponse(200, optBody, "OTP Send Successfully...")
+        )
+    } catch (error) {
+        console.log(error);
+        next(new ApiError(500, error.message))
+    }
+}
+
+export const register = async (req, res, next) => {
+    try {
+        console.log(req.body);
+        const { name, email, password, otp } = req.body;
         // console.log(name, email, password)
-        if (!name || !email || !password) {
+        console.log(typeof otp);
+        if (!name || !email || !password || !otp) {
             return next(new ApiError(400, "All fileds are required"))
         }
 
@@ -43,7 +83,7 @@ const register = async (req, res, next) => {
     }
 }
 
-const login = async (req, res, next) => {
+export const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -72,7 +112,7 @@ const login = async (req, res, next) => {
     }
 }
 
-const loguot = async (req, res, next) => {
+export const loguot = async (req, res, next) => {
     try {
         res.cookie("token", null, {
             secure: true,
@@ -87,4 +127,3 @@ const loguot = async (req, res, next) => {
         next(new ApiError(501, "Failed to logout"))
     }
 }
-module.exports = { register, login, loguot }

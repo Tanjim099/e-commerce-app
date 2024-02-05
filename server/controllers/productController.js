@@ -1,8 +1,8 @@
-const { productModel } = require("../models/productModel");
-const { ApiResponse } = require("../utils/ApiResponse");
-const { ApiError } = require("../utils/apiError");
+import productModel from "../models/productModel.js";
+import ApiResponse from "../utils/ApiResponse.js";
+import ApiError from "../utils/apiError.js";
 
-const createProduct = async (req, res, next) => {
+export const createProduct = async (req, res, next) => {
     try {
         const { name, description, price, category, image } = req.body;
         if (!name || !description || !price || !category || !image) {
@@ -27,7 +27,7 @@ const createProduct = async (req, res, next) => {
     }
 }
 
-const getProduct = async (req, res, next) => {
+export const getProduct = async (req, res, next) => {
     try {
         const { pid } = req.params;
         const product = await productModel.findById(pid)
@@ -39,7 +39,7 @@ const getProduct = async (req, res, next) => {
         next(new ApiError(500, "Failed to Fetched product", error))
     }
 }
-const getAllProduct = async (req, res, next) => {
+export const getAllProduct = async (req, res, next) => {
     try {
         const products = await productModel.find().sort({ createdAt: -1 });
         res.status(201).json(
@@ -50,5 +50,3 @@ const getAllProduct = async (req, res, next) => {
         next(new ApiError(500, "Failed to Fetched all products", error))
     }
 }
-
-module.exports = { createProduct, getProduct, getAllProduct }

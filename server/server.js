@@ -1,13 +1,13 @@
-const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
-const cookieParser = require('cookie-parser')
-const { dbConnection } = require("./config/db");
-const { userRouters } = require("./routes/authRoute");
-const { productRoutes } = require("./routes/productRoute");
-const { orderRoutes } = require("./routes/orderRoute");
-require("dotenv").config();
-
+import express from "express";
+import cors from "cors";
+import morgan from "morgan";
+import cookieParser from 'cookie-parser';
+import dbConnection from "./config/db.js";
+import userRouters from "./routes/authRoute.js";
+import productRoutes from "./routes/productRoute.js";
+import orderRoutes from "./routes/orderRoute.js";
+import dotenv from "dotenv";
+dotenv.config();
 const app = express();
 
 const coreOptions = {

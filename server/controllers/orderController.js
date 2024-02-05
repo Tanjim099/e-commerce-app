@@ -1,9 +1,9 @@
 
-const { ApiResponse } = require("../utils/ApiResponse");
-const { ApiError } = require("../utils/apiError");
-const { orderModel } = require("../models/orderModel")
+import ApiResponse from "../utils/ApiResponse.js";
+import ApiError from "../utils/apiError.js";
+import orderModel from "../models/orderModel.js"
 
-const makeOrders = async (req, res, next) => {
+export const makeOrders = async (req, res, next) => {
     try {
         const { items, userId } = req.body;
         const order = await orderModel.create({
@@ -22,7 +22,7 @@ const makeOrders = async (req, res, next) => {
     }
 };
 
-const getOrder = async (req, res, next) => {
+export const getOrder = async (req, res, next) => {
     try {
         const { uid } = req.params;
         const orders = await orderModel.find({ buyer: uid }).populate("products").populate("buyer", "name");
@@ -35,7 +35,7 @@ const getOrder = async (req, res, next) => {
     }
 }
 
-const getAllOrder = async (req, res, next) => {
+export const getAllOrder = async (req, res, next) => {
     try {
         const orders = await orderModel.find().populate("products").populate("buyer").sort({ createdAt: -1 })
         res.status(201).json(
@@ -47,7 +47,7 @@ const getAllOrder = async (req, res, next) => {
     }
 }
 
-const orderStatus = async (req, res, next) => {
+export const orderStatus = async (req, res, next) => {
     try {
         const { orderid } = req.params;
         const { status } = req.body;
@@ -60,5 +60,3 @@ const orderStatus = async (req, res, next) => {
         next(new ApiError(500, "Failed to Order Status", error))
     }
 }
-
-module.exports = { makeOrders, getOrder, getAllOrder, orderStatus };
